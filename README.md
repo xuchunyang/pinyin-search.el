@@ -1,5 +1,6 @@
 # Search Chinese by Pinyin
 ---
+[![MELPA](http://melpa.org/packages/pinyin-search-badge.svg)](http://melpa.org/#/pinyin-search)
 
 ## Introduction
 
@@ -20,6 +21,12 @@ and Emacs itself.
 ![Imgur](http://i.imgur.com/nYdtila.gif)
 
 *Notes*: in the above demo, both `叙述` and `小说` is searched by `xs`.
+
+## Installation
+
+Install from Melpa with:
+
+    M-x package-install RET pinyin-search RET
 
 ## Usage
 
