@@ -20,7 +20,7 @@ and Emacs itself.
 
 ![Imgur](http://i.imgur.com/nYdtila.gif)
 
-*Notes*: in the above demo, both `叙述` and `小说` is searched by `xs`.
+*Notes*: in the above demo, both `叙述` and `小说` are searched by `xs`.
 
 ## Installation
 
