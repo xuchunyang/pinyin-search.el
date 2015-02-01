@@ -111,6 +111,7 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 
 ;;;###autoload
 (defalias 'isearch-forward-pinyin 'pinyin-search-forward)
+;;;###autoload
 (defalias 'isearch-backword-pinyin 'pinyin-search-backword)
 
 (provide 'pinyin-search)
