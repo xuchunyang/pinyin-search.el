@@ -68,32 +68,26 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
      pinyin)
     regexp))
 
-(defun pinyin-search--fix-isearch-search-string (orig-fun &rest args)
-  "Advice function of ORIG-FUN (`isearch-search-string') to fix ARGS."
-  (setcar args (pinyin-search--pinyin-to-regexp (car args)))
-  (apply orig-fun args))
+(defadvice isearch-search-string (before isearch-search-string-advice activate)
+  "Convert `isearch-string' from Pinyin to regexp."
+  (ad-set-arg 0 (pinyin-search--pinyin-to-regexp (ad-get-arg 0))))
 
 ;;;###autoload
 (defun pinyin-search-forward (&optional backword-direction)
   "Search Chinese forward (backword if BACKWORD-DIRECTION is non-nil) by the first letter of Pinyin (拼音首字母)."
   (interactive "P")
   (setq pinyin-search t)
-  (advice-add 'isearch-search-string
-              :around
-              #'pinyin-search--fix-isearch-search-string)
   (add-hook 'isearch-mode-hook
             (lambda ()
               (when pinyin-search
+                (ad-activate 'isearch-search-string)
                 (setq mode-line-format (cons "拼音搜索 " mode-line-format))
                 (force-mode-line-update)))
             t
             t)
   (add-hook 'isearch-mode-end-hook
             (lambda ()
-              (when (advice-member-p #'pinyin-search--fix-isearch-search-string
-                                     'isearch-search-string)
-                (advice-remove 'isearch-search-string
-                               #'pinyin-search--fix-isearch-search-string))
+              (ad-deactivate 'isearch-search-string)
               (when pinyin-search
                 (setq mode-line-format (delete "拼音搜索 " mode-line-format))
                 (force-mode-line-update))
