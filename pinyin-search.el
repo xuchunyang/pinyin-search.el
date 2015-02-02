@@ -57,8 +57,13 @@
 Borrowed from `find-by-pinyin-dired' package
 see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 
-(defvar pinyin-search nil
-  "Distinguish between pinyin and normal isearch commands.")
+;; To be consistent with isearch-regexp/word/...
+(defvar isearch-pinyin nil)             ; Searching for a Pinyin
+
+(defcustom isearch-pinyin-mode-line-indicate "拼音搜索 "
+  "Incidate pinyin searching at the beginning of mode line."
+  :group 'isearch
+  :type 'string)
 
 (defun pinyin-search--pinyin-to-regexp (pinyin)
   "Convert the first letter of Chinese PINYIN to regexp."
@@ -68,45 +73,45 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
      pinyin)
     regexp))
 
-(defadvice isearch-search-string (before isearch-search-string-advice activate)
-  "Convert `isearch-string' from Pinyin to regexp."
-  (ad-set-arg 0 (pinyin-search--pinyin-to-regexp (ad-get-arg 0))))
+(setq isearch-search-fun-function 'isearch-function-with-pinyin)
+
+(define-key isearch-mode-map "\M-sp" 'isearch-toggle-pinyin)
+
+(add-hook 'isearch-mode-end-hook 'isearch-turn-off-pinyin)
+
+(defun isearch-function-with-pinyin ()
+  "Wrap for Pinyin searching."
+  (if isearch-pinyin
+      ;; Return the function to use for pinyin search
+      `(lambda (string bound noerror)
+         (funcall (if ,isearch-forward
+                      're-search-forward
+                    're-search-backward)
+                  (pinyin-search--pinyin-to-regexp string) bound noerror))
+    ;; Return default function
+    (isearch-search-fun-default)))
+
+(defun isearch-turn-off-pinyin ()
+  (setq isearch-pinyin nil)
+  (setq mode-line-format (delete isearch-pinyin-mode-line-indicate
+                                 mode-line-format))
+  (force-mode-line-update))
 
 ;;;###autoload
-(defun pinyin-search-forward (&optional backword-direction)
-  "Search Chinese forward (backword if BACKWORD-DIRECTION is non-nil) by the first letter of Pinyin (拼音首字母)."
-  (interactive "P")
-  (setq pinyin-search t)
-  (add-hook 'isearch-mode-hook
-            (lambda ()
-              (when pinyin-search
-                (ad-activate 'isearch-search-string)
-                (setq mode-line-format (cons "拼音搜索 " mode-line-format))
-                (force-mode-line-update)))
-            t
-            t)
-  (add-hook 'isearch-mode-end-hook
-            (lambda ()
-              (ad-deactivate 'isearch-search-string)
-              (when pinyin-search
-                (setq mode-line-format (delete "拼音搜索 " mode-line-format))
-                (force-mode-line-update))
-              (setq pinyin-search nil))
-            nil
-            t)
-  (call-interactively (if backword-direction
-                          'isearch-backward-regexp
-                        'isearch-forward-regexp)))
-;;;###autoload
-(defun pinyin-search-backword ()
-  "Search Chinese backword by the first letter of Pinyin (拼音首字母)."
+(defun isearch-toggle-pinyin ()
+  "Toggle pinyin in searching on or off.
+Toggles the value of the variable `isearch-pinyin'."
   (interactive)
-  (pinyin-search-forward 'backword-direction))
-
-;;;###autoload
-(defalias 'isearch-forward-pinyin 'pinyin-search-forward)
-;;;###autoload
-(defalias 'isearch-backword-pinyin 'pinyin-search-backword)
+  (setq mode-line-format (funcall (if isearch-pinyin 'delete 'cons)
+                                  isearch-pinyin-mode-line-indicate
+                                  mode-line-format))
+  (force-mode-line-update)
+  (setq isearch-pinyin (not isearch-pinyin))
+  (setq isearch-success t isearch-adjusted t)
+  (setq isearch-lazy-highlight-error t) ; force updating lazy highlight
+  (message (concat "Turn " (if isearch-pinyin "on" "off") " pinyin search"))
+  (sit-for 1)
+  (isearch-update))
 
 (provide 'pinyin-search)
 
