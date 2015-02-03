@@ -20,8 +20,14 @@
 ;; - `isearch-forward-pinyin'
 ;; - `isearch-backword-pinyin'
 ;;
-;; or run `isearch-toggle-pinyin' ("M-s p") during invoking any normal
-;; `isearch' commands
+;; or run `isearch-toggle-pinyin' after invoking any normal
+;; `isearch' commands like `isearch-forward` (`C-s`).
+;;
+;; Sample key bindings:
+;;
+;; (define-key isearch-mode-map (kbd "M-s p") 'isearch-toggle-pinyin)
+;; (global-set-key (kbd "C-c C-s") 'isearch-forward-pinyin)
+;; (global-set-key (kbd "C-c C-r") 'isearch-backword-pinyin)
 ;;
 ;; Known Bugs and Limitations:
 ;; - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
@@ -87,8 +93,6 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
     regexp))
 
 (setq isearch-search-fun-function 'isearch-function-with-pinyin)
-
-(define-key isearch-mode-map "\M-sp" 'isearch-toggle-pinyin)
 
 (add-hook 'isearch-mode-end-hook 'isearch-set-pinyin-state)
 
