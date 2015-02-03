@@ -117,19 +117,18 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 (defun isearch-set-pinyin-state ()
   ;; Only when users cancel isearch or exit isearch normally with
   ;; `isearch-exit' should the state of pinyin search be changed.
-  (if (or isearch-mode-end-hook-quit
-          isearch-mode-exit-flag)
-      (progn
-        (setq isearch-mode-exit-flag nil)
-        (setq mode-line-format (delete isearch-pinyin-mode-line-indicate
-                                       mode-line-format))
-        (force-mode-line-update)
-        (cond
-         ((eq isearch-pinyin-keep-last-state 'on)
-          (setq isearch-pinyin t))
-         ((eq isearch-pinyin-keep-last-state 'off)
-          (setq isearch-pinyin nil))
-         (t 'keep)))))
+  (when (or isearch-mode-end-hook-quit
+            isearch-mode-exit-flag)
+    (setq isearch-mode-exit-flag nil)
+    (setq mode-line-format (delete isearch-pinyin-mode-line-indicate
+                                   mode-line-format))
+    (force-mode-line-update)
+    (cond
+     ((eq isearch-pinyin-keep-last-state 'on)
+      (setq isearch-pinyin t))
+     ((eq isearch-pinyin-keep-last-state 'off)
+      (setq isearch-pinyin nil))
+     (t 'keep))))
 
 ;;;###autoload
 (defun isearch-toggle-pinyin ()
