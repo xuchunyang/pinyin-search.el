@@ -64,7 +64,7 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 ;; To be consistent with isearch-regexp/word/...
 (defvar isearch-pinyin nil)             ; Searching for a Pinyin
 
-(defcustom isearch-pinyin-mode-line-indicate "拼音搜索 "
+(defcustom isearch-pinyin-mode-line-indicate " Isearch[拼音]"
   "Incidate pinyin searching at the beginning of mode line."
   :group 'isearch
   :type 'string)
@@ -107,10 +107,10 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
     (isearch-search-fun-default)))
 
 (defun isearch-update-pinyin-indicator ()
-  (if isearch-pinyin
-      (add-to-list 'mode-line-format isearch-pinyin-mode-line-indicate)
-    (setq mode-line-format
-          (delete isearch-pinyin-mode-line-indicate mode-line-format)))
+  (setcdr (assq 'isearch-mode minor-mode-alist)
+          `(,(if isearch-pinyin
+                 isearch-pinyin-mode-line-indicate
+               " Isearch")))
   (force-mode-line-update))
 
 (defvar isearch-mode-exit-flag nil)
@@ -124,8 +124,7 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
   (when (or isearch-mode-end-hook-quit
             isearch-mode-exit-flag)
     (setq isearch-mode-exit-flag nil)
-    (setq mode-line-format (delete isearch-pinyin-mode-line-indicate
-                                   mode-line-format))
+    (setcdr (assq 'isearch-mode minor-mode-alist) '(" Isearch"))
     (force-mode-line-update)
     (cond
      ((eq isearch-pinyin-keep-last-state 'on)
