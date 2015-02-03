@@ -65,9 +65,9 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
   :group 'isearch
   :type 'string)
 
-(defcustom isearch-pinyin-keep-last-state t
+(defcustom isearch-pinyin-keep-last-state 'off
   "When the value is `on' or `off', pinyin search will always be
-  turned on or off in next isearch. Any other value (i.e., `t')
+  turned on or off in next isearch. Any other value (i.e., t)
   means the last state will be used."
   :type '(choice (const :tag "Keep the last state" t)
 		 (const :tag "Always turn on" 'on)
@@ -143,6 +143,20 @@ Toggles the value of the variable `isearch-pinyin'."
   (message (concat "Turn " (if isearch-pinyin "on" "off") " pinyin search"))
   (sit-for 1)
   (isearch-update))
+
+;;;###autoload
+(defun isearch-forward-pinyin ()
+  "Search Chinese forward by Pinyin."
+  (interactive)
+  (setq isearch-pinyin t)
+  (call-interactively 'isearch-forward))
+
+;;;###autoload
+(defun isearch-backword-pinyin ()
+  "Search Chinese forward by Pinyin."
+  (interactive)
+  (setq isearch-pinyin t)
+  (call-interactively 'isearch-backward))
 
 (provide 'pinyin-search)
 
