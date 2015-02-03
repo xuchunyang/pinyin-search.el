@@ -20,8 +20,12 @@
 ;; - `isearch-forward-pinyin'
 ;; - `isearch-backword-pinyin'
 ;;
+;; or run `isearch-toggle-pinyin' ("M-s p") during invoking any normal
+;; `isearch' commands
+;;
 ;; Known Bugs and Limitations:
 ;; - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
+;; - Only *Simplified* Chinese is supported
 
 ;;; Code:
 
