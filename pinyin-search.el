@@ -65,6 +65,15 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
   :group 'isearch
   :type 'string)
 
+(defcustom isearch-pinyin-keep-last-state t
+  "When the value is `on' or `off', pinyin search will always be
+  turned on or off in next isearch. Any other value (i.e., `t')
+  means the last state will be used."
+  :type '(choice (const :tag "Keep the last state" t)
+		 (const :tag "Always turn on" 'on)
+		 (const :tag "Always turn off" 'off))
+  :group 'isearch)
+
 (defun pinyin-search--pinyin-to-regexp (pinyin)
   "Convert the first letter of Chinese PINYIN to regexp."
   (let ((regexp ""))
@@ -77,7 +86,9 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 
 (define-key isearch-mode-map "\M-sp" 'isearch-toggle-pinyin)
 
-(add-hook 'isearch-mode-end-hook 'isearch-turn-off-pinyin)
+(add-hook 'isearch-mode-end-hook 'isearch-set-pinyin-state)
+
+(add-hook 'isearch-mode-hook 'isearch-update-pinyin-indicator)
 
 (defun isearch-function-with-pinyin ()
   "Wrap for Pinyin searching."
@@ -91,24 +102,39 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
     ;; Return default function
     (isearch-search-fun-default)))
 
-(defun isearch-turn-off-pinyin ()
-  (setq isearch-pinyin nil)
-  (setq mode-line-format (delete isearch-pinyin-mode-line-indicate
-                                 mode-line-format))
+(defun isearch-update-pinyin-indicator ()
+  (if isearch-pinyin
+      (add-to-list 'mode-line-format isearch-pinyin-mode-line-indicate)
+    (setq mode-line-format
+          (delete isearch-pinyin-mode-line-indicate mode-line-format)))
   (force-mode-line-update))
+
+(defun isearch-set-pinyin-state ()
+  ;; Only when users cancel isearch or exit isearch normally with
+  ;; `isearch-exit' should the state of pinyin search be changed.
+  (if (or isearch-mode-end-hook-quit
+          ;; Is there a simple way to find if users exit normally?
+          (eq (second (backtrace-frame 8)) 'isearch-exit))
+      (progn
+        (setq mode-line-format (delete isearch-pinyin-mode-line-indicate
+                                       mode-line-format))
+        (force-mode-line-update)
+        (cond
+         ((eq isearch-pinyin-keep-last-state 'on)
+          (setq isearch-pinyin t))
+         ((eq isearch-pinyin-keep-last-state 'off)
+          (setq isearch-pinyin nil))
+         (t 'keep)))))
 
 ;;;###autoload
 (defun isearch-toggle-pinyin ()
   "Toggle pinyin in searching on or off.
 Toggles the value of the variable `isearch-pinyin'."
   (interactive)
-  (setq mode-line-format (funcall (if isearch-pinyin 'delete 'cons)
-                                  isearch-pinyin-mode-line-indicate
-                                  mode-line-format))
-  (force-mode-line-update)
   (setq isearch-pinyin (not isearch-pinyin))
   (setq isearch-success t isearch-adjusted t)
   (setq isearch-lazy-highlight-error t) ; force updating lazy highlight
+  (isearch-update-pinyin-indicator)
   (message (concat "Turn " (if isearch-pinyin "on" "off") " pinyin search"))
   (sit-for 1)
   (isearch-update))
