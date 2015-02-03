@@ -109,13 +109,18 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
           (delete isearch-pinyin-mode-line-indicate mode-line-format)))
   (force-mode-line-update))
 
+(defvar isearch-mode-exit-flag nil)
+
+(defadvice isearch-exit (before isearch-signal-when-exiting activate)
+  (setq isearch-mode-exit-flag t))
+
 (defun isearch-set-pinyin-state ()
   ;; Only when users cancel isearch or exit isearch normally with
   ;; `isearch-exit' should the state of pinyin search be changed.
   (if (or isearch-mode-end-hook-quit
-          ;; Is there a simple way to find if users exit normally?
-          (eq (second (backtrace-frame 8)) 'isearch-exit))
+          isearch-mode-exit-flag)
       (progn
+        (setq isearch-mode-exit-flag nil)
         (setq mode-line-format (delete isearch-pinyin-mode-line-indicate
                                        mode-line-format))
         (force-mode-line-update)
