@@ -18,7 +18,7 @@
 ;;
 ;; Usage:
 ;; - `isearch-forward-pinyin'
-;; - `isearch-backword-pinyin'
+;; - `isearch-backward-pinyin'
 ;;
 ;; or run `isearch-toggle-pinyin' after invoking any normal
 ;; `isearch' commands like `isearch-forward` (`C-s`).
@@ -27,7 +27,7 @@
 ;;
 ;; (define-key isearch-mode-map (kbd "M-s p") 'isearch-toggle-pinyin)
 ;; (global-set-key (kbd "C-c C-s") 'isearch-forward-pinyin)
-;; (global-set-key (kbd "C-c C-r") 'isearch-backword-pinyin)
+;; (global-set-key (kbd "C-c C-r") 'isearch-backward-pinyin)
 ;;
 ;; Known Bugs and Limitations:
 ;; - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
@@ -111,10 +111,9 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
     (isearch-search-fun-default)))
 
 (defun isearch-update-pinyin-indicator ()
-  (setcdr (assq 'isearch-mode minor-mode-alist)
-          `(,(if isearch-pinyin
-                 isearch-pinyin-mode-line-indicate
-               " Isearch")))
+  (if isearch-pinyin
+      (setq isearch-mode isearch-pinyin-mode-line-indicate)
+    (setq isearch-mode " Isearch"))
   (force-mode-line-update))
 
 (defvar isearch-mode-exit-flag nil)
@@ -128,8 +127,6 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
   (when (or isearch-mode-end-hook-quit
             isearch-mode-exit-flag)
     (setq isearch-mode-exit-flag nil)
-    (setcdr (assq 'isearch-mode minor-mode-alist) '(" Isearch"))
-    (force-mode-line-update)
     (cond
      ((eq isearch-pinyin-keep-last-state 'on)
       (setq isearch-pinyin t))
@@ -158,8 +155,8 @@ Toggles the value of the variable `isearch-pinyin'."
   (call-interactively 'isearch-forward))
 
 ;;;###autoload
-(defun isearch-backword-pinyin ()
-  "Search Chinese forward by Pinyin."
+(defun isearch-backward-pinyin ()
+  "Search Chinese backward by Pinyin."
   (interactive)
   (setq isearch-pinyin t)
   (call-interactively 'isearch-backward))
