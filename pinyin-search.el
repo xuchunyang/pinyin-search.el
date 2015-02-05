@@ -20,14 +20,8 @@
 ;; - `isearch-forward-pinyin'
 ;; - `isearch-backward-pinyin'
 ;;
-;; or run `isearch-toggle-pinyin' after invoking any normal
-;; `isearch' commands like `isearch-forward` (`C-s`).
-;;
-;; Sample key bindings:
-;;
-;; (define-key isearch-mode-map (kbd "M-s p") 'isearch-toggle-pinyin)
-;; (global-set-key (kbd "C-c C-s") 'isearch-forward-pinyin)
-;; (global-set-key (kbd "C-c C-r") 'isearch-backward-pinyin)
+;; or run `isearch-toggle-pinyin' (`M-s p') after invoking any normal
+;; `isearch' commands like `C-s` (`isearch-forward`).
 ;;
 ;; Known Bugs and Limitations:
 ;; - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
@@ -131,6 +125,8 @@ pinyin-search modifies some default behaviors of isearch."
     (unless isearch-pinyin-keep-last-state
       (setq isearch-pinyin nil))))
 
+;;; Commands
+
 ;;;###autoload
 (defun isearch-toggle-pinyin ()
   "Toggle pinyin in searching on or off.
@@ -157,6 +153,10 @@ Toggles the value of the variable `isearch-pinyin'."
   (interactive)
   (setq isearch-pinyin t)
   (call-interactively 'isearch-backward))
+
+;;; Key bindings
+
+;;;###autoload (define-key isearch-mode-map "\M-sp" #'isearch-toggle-pinyin)
 
 (provide 'pinyin-search)
 

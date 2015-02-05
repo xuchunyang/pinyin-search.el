@@ -33,17 +33,8 @@ Install from Melpa with:
 - `isearch-forward-pinyin`
 - `isearch-backword-pinyin`
 
-or just run `isearch-toggle-pinyin` after invoking any normal
-`isearch` commands like `isearch-forward` (`C-s`).
-
-## Sample key bindings
-
-```elisp
-(define-key isearch-mode-map (kbd "M-s p") 'isearch-toggle-pinyin)
-
-(global-set-key (kbd "C-c C-s") 'isearch-forward-pinyin)
-(global-set-key (kbd "C-c C-r") 'isearch-backword-pinyin)
-```
+or just run `M-s p` (`isearch-toggle-pinyin`) after invoking any normal
+`isearch` commands like `C-s` (`isearch-forward`).
 
 ## Known Bugs and Limitations
 
