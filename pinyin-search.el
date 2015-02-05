@@ -94,6 +94,11 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 
 (add-hook 'isearch-mode-hook 'isearch-update-pinyin-indicator)
 
+(defun pinyin-search-unload-function ()
+  "Recover the value of `isearch-search-fun-function' when unload `pinyin-search' feature.
+This function will be called automatically by `unload-feature'."
+  (setq isearch-search-fun-function 'isearch-search-fun-default))
+
 (defun isearch-function-with-pinyin ()
   "Wrap for Pinyin searching."
   (if isearch-pinyin
