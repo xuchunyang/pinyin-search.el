@@ -70,6 +70,8 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 ;; To be consistent with isearch-regexp/word/...
 (defvar isearch-pinyin nil)             ; Searching for a Pinyin
 
+(defvar isearch-mode-exit-flag nil)
+
 (defcustom isearch-pinyin-mode-line-indicate " Isearch[拼音]"
   "Incidate pinyin searching at the beginning of mode line."
   :group 'isearch
@@ -80,6 +82,14 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
   :type 'boolean
   :group 'isearch)
 
+(setq isearch-search-fun-function 'isearch-function-with-pinyin)
+
+(add-hook 'isearch-mode-end-hook 'isearch-set-pinyin-state)
+(add-hook 'isearch-mode-hook 'isearch-update-pinyin-indicator)
+
+(defadvice isearch-exit (before isearch-signal-when-exiting activate)
+  (setq isearch-mode-exit-flag t))
+
 (defun pinyin-search--pinyin-to-regexp (pinyin)
   "Convert the first letter of Chinese PINYIN to regexp."
   (let ((regexp ""))
@@ -87,12 +97,6 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
      (lambda (ch) (setq regexp (concat regexp (nth (- ch ?a) fbpd-char-table))))
      pinyin)
     regexp))
-
-(setq isearch-search-fun-function 'isearch-function-with-pinyin)
-
-(add-hook 'isearch-mode-end-hook 'isearch-set-pinyin-state)
-
-(add-hook 'isearch-mode-hook 'isearch-update-pinyin-indicator)
 
 (defun pinyin-search-unload-function ()
   "Clean up when unload this package with `unload-feature'.
@@ -117,11 +121,6 @@ pinyin-search modifies some default behaviors of isearch."
       (setq isearch-mode isearch-pinyin-mode-line-indicate)
     (setq isearch-mode " Isearch"))
   (force-mode-line-update))
-
-(defvar isearch-mode-exit-flag nil)
-
-(defadvice isearch-exit (before isearch-signal-when-exiting activate)
-  (setq isearch-mode-exit-flag t))
 
 (defun isearch-set-pinyin-state ()
   ;; Only when users cancel isearch or exit isearch normally with
