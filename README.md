@@ -39,4 +39,3 @@ or just run `M-s p` (`isearch-toggle-pinyin`) after invoking any normal
 ## Known Bugs and Limitations
 
 - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
-- Only *Simplified* Chinese is supported

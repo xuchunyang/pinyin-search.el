@@ -25,7 +25,6 @@
 ;;
 ;; Known Bugs and Limitations:
 ;; - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
-;; - Only *Simplified* Chinese is supported
 
 ;;; Code:
 
