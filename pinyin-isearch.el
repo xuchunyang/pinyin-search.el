@@ -1,4 +1,4 @@
-;;; pinyin-search.el --- Search Chinese by Pinyin
+;;; pinyin-isearch.el --- Search Chinese by Pinyin
 
 ;; Copyright © 2015 Chunyang Xu
 
@@ -28,6 +28,23 @@
 ;; - Only *Simplified* Chinese is supported
 
 ;;; Code:
+
+(defgroup pinyin-isearch nil
+  "Pinyin matching in isearch"
+  :prefix "pinyin-isearch-"
+  :group 'isearch
+  :link '(url-link :tag "Development and bug reports"
+		   "https://github.com/xuchunyang/pinyin-search.el"))
+
+(defcustom pinyin-isearch-message-prefix "[拼音] "
+  "Prepended to the isearch prompt when Pinyin searching is activated."
+  :type 'string
+  :group 'pinyin-isearch)
+
+(defcustom pinyin-isearch-keep-last-state nil
+  "Non-nil means the last state will be used in any next isearch commands."
+  :type 'boolean
+  :group 'pinyin-isearch)
 
 (defconst fbpd-char-table
   '("[阿啊呵腌嗄锕吖爱哀挨碍埃癌艾唉矮哎皑蔼隘暧霭捱嗳瑷嫒锿嗌砹安案按暗岸俺谙黯鞍氨庵桉鹌胺铵揞犴埯昂肮盎奥澳傲熬敖凹袄懊坳嗷拗鏖骜鳌翱岙廒遨獒聱媪螯鏊]"
@@ -61,30 +78,23 @@
 Borrowed from `find-by-pinyin-dired' package
 see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 
-;; To be consistent with isearch-regexp/word/...
-(defvar isearch-pinyin nil)             ; Searching for a Pinyin
+(defvar pinyin-isearch-activated nil)
 
 (defvar isearch-mode-exit-flag nil)
-
-(defcustom isearch-pinyin-mode-line-indicate " Isearch[拼音]"
-  "Incidate pinyin searching at the beginning of mode line."
-  :group 'isearch
-  :type 'string)
-
-(defcustom isearch-pinyin-keep-last-state nil
-  "Non-nil means the last state will be used in any next isearch commands."
-  :type 'boolean
-  :group 'isearch)
 
 (setq isearch-search-fun-function 'isearch-function-with-pinyin)
 
 (add-hook 'isearch-mode-end-hook 'isearch-set-pinyin-state)
-(add-hook 'isearch-mode-hook 'isearch-update-pinyin-indicator)
 
 (defadvice isearch-exit (before isearch-signal-when-exiting activate)
   (setq isearch-mode-exit-flag t))
 
-(defun pinyin-search--pinyin-to-regexp (pinyin)
+(defadvice isearch-message-prefix (after pinyin-isearch-message-prefix activate)
+  (if pinyin-isearch-activated
+      (setq ad-return-value (concat pinyin-isearch-message-prefix ad-return-value))
+    ad-return-value))
+
+(defun pinyin-isearch--pinyin-to-regexp (pinyin)
   "Convert the first letter of Chinese PINYIN to regexp."
   (let ((regexp ""))
     (mapc
@@ -92,7 +102,7 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
      pinyin)
     regexp))
 
-(defun pinyin-search-unload-function ()
+(defun pinyin-isearch-unload-function ()
   "Clean up when unload this package with `unload-feature'.
 pinyin-search modifies some default behaviors of isearch."
   (setq isearch-search-fun-function 'isearch-search-fun-default)
@@ -100,21 +110,15 @@ pinyin-search modifies some default behaviors of isearch."
 
 (defun isearch-function-with-pinyin ()
   "Wrap for Pinyin searching."
-  (if isearch-pinyin
+  (if pinyin-isearch-activated
       ;; Return the function to use for pinyin search
       `(lambda (string bound noerror)
          (funcall (if ,isearch-forward
                       're-search-forward
                     're-search-backward)
-                  (pinyin-search--pinyin-to-regexp string) bound noerror))
+                  (pinyin-isearch--pinyin-to-regexp string) bound noerror))
     ;; Return default function
     (isearch-search-fun-default)))
-
-(defun isearch-update-pinyin-indicator ()
-  (if isearch-pinyin
-      (setq isearch-mode isearch-pinyin-mode-line-indicate)
-    (setq isearch-mode " Isearch"))
-  (force-mode-line-update))
 
 (defun isearch-set-pinyin-state ()
   ;; Only when users cancel isearch or exit isearch normally with
@@ -122,21 +126,20 @@ pinyin-search modifies some default behaviors of isearch."
   (when (or isearch-mode-end-hook-quit
             isearch-mode-exit-flag)
     (setq isearch-mode-exit-flag nil)
-    (unless isearch-pinyin-keep-last-state
-      (setq isearch-pinyin nil))))
+    (unless pinyin-isearch-keep-last-state
+      (setq pinyin-isearch-activated nil))))
 
 ;;; Commands
 
 ;;;###autoload
 (defun isearch-toggle-pinyin ()
   "Toggle pinyin in searching on or off.
-Toggles the value of the variable `isearch-pinyin'."
+Toggles the value of the variable `pinyin-isearch-activated'."
   (interactive)
-  (setq isearch-pinyin (not isearch-pinyin))
+  (setq pinyin-isearch-activated (not pinyin-isearch-activated))
   (setq isearch-success t isearch-adjusted t)
   (setq isearch-lazy-highlight-error t) ; force updating lazy highlight
-  (isearch-update-pinyin-indicator)
-  (message (concat "Turn " (if isearch-pinyin "on" "off") " pinyin search"))
+  (message (concat "Turn " (if pinyin-isearch-activated "on" "off") " pinyin search"))
   (sit-for 1)
   (isearch-update))
 
@@ -144,24 +147,24 @@ Toggles the value of the variable `isearch-pinyin'."
 (defun isearch-forward-pinyin ()
   "Search Chinese forward by Pinyin."
   (interactive)
-  (setq isearch-pinyin t)
+  (setq pinyin-isearch-activated t)
   (call-interactively 'isearch-forward))
 
 ;;;###autoload
 (defun isearch-backward-pinyin ()
   "Search Chinese backward by Pinyin."
   (interactive)
-  (setq isearch-pinyin t)
+  (setq pinyin-isearch-activated t)
   (call-interactively 'isearch-backward))
 
 ;;; Key bindings
 
 ;;;###autoload (define-key isearch-mode-map "\M-sp" #'isearch-toggle-pinyin)
 
-(provide 'pinyin-search)
+(provide 'pinyin-isearch)
 
 ;; Local Variables:
 ;; coding: utf-8
 ;; End:
 
-;;; pinyin-search.el ends here
+;;; pinyin-isearch.el ends here
