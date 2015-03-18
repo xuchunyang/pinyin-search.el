@@ -4,9 +4,9 @@
 
 ;; Author: Chunyang Xu <xuchunyang56@gmail.com>
 ;; URL: https://github.com/xuchunyang/pinyin-search.el
-;; Version: 0.0.1
+;; Version: 1.0.0
 ;; Created: 30 Jan 2015
-;; Keywords: Chinese
+;; Keywords: Chinese, search
 
 ;; This file is free software (GPLv3 License)
 
@@ -33,7 +33,7 @@
   :prefix "pinyin-search-"
   :group 'isearch
   :link '(url-link :tag "Development and bug reports"
-		   "https://github.com/xuchunyang/pinyin-search.el"))
+                   "https://github.com/xuchunyang/pinyin-search.el"))
 
 (defcustom pinyin-search-message-prefix "[拼音] "
   "Prepended to the isearch prompt when Pinyin searching is activated."
