@@ -1,6 +1,7 @@
 # Search Chinese by Pinyin
 ---
 [![MELPA](http://melpa.org/packages/pinyin-search-badge.svg)](http://melpa.org/#/pinyin-search)
+[![MELPA](http://stable.melpa.org/packages/pinyin-search-badge.svg)](http://stable.melpa.org/#/pinyin-search)
 
 ## Introduction
 
