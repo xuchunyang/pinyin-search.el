@@ -13,7 +13,7 @@ e.g. use `zw` to search `中文` (*Z*hong *W*en).
 
 This package is similar to
 [vim-PinyinSearch](https://github.com/ppwwyyxx/vim-PinyinSearch), but
-probably more powerful for
+probably more powerful because of
 [Incremental Search](http://www.gnu.org/software/emacs/manual/html_node/emacs/Incremental-Search.html)
 and Emacs itself.
 
@@ -21,21 +21,15 @@ and Emacs itself.
 
 ![Imgur](http://i.imgur.com/nYdtila.gif)
 
-*Notes*: in the above demo, both `叙述` and `小说` are searched by `xs`.
-
 ## Installation
 
-Install from Melpa with:
+You can install `pinyin-search` from [MELPA](http://melpa.org/) with package.el.
 
     M-x package-install RET pinyin-search RET
 
 ## Usage
 
-- `isearch-forward-pinyin`
-- `isearch-backword-pinyin`
-
-or just run `M-s p` (`isearch-toggle-pinyin`) after invoking any normal
-`isearch` commands like `C-s` (`isearch-forward`).
+    M-x pinyin-search RET
 
 ## Known Bugs and Limitations
 

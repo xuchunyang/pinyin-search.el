@@ -28,6 +28,7 @@
 ;; e.g. use `zw` to search `中文` (*Z*hong *W*en).
 ;;
 ;; Usage:
+
 ;; - `isearch-forward-pinyin'
 ;; - `isearch-backward-pinyin'
 ;;
@@ -38,8 +39,9 @@
 ;; - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
 
 ;;; Change Log:
-;; 1.0.0   - 2015/3/18 - Simplify integration with `isearch'.
-;; 0.0.1   - 2015/1/31 - Created File.
+;; 1.0.1   - 2015/04/05 - Add two aliases (`pinyin-search' and `pinyin-search-backward')
+;; 1.0.0   - 2015/03/18 - Simplify integration with `isearch'.
+;; 0.0.1   - 2015/01/31 - Created File.
 
 ;;; Code:
 
@@ -171,9 +173,15 @@ Toggles the value of the variable `pinyin-search-activated'."
   (setq pinyin-search-activated t)
   (call-interactively 'isearch-backward))
 
-;;; Key bindings
+;;;###autoload
+(defalias 'pinyin-search 'isearch-forward-pinyin)
+;;;###autoload
+(defalias 'pinyin-search-backward 'isearch-backward-pinyin)
 
-;;;###autoload (define-key isearch-mode-map "\M-sp" #'isearch-toggle-pinyin)
+;;; Default Key bindings
+
+;;;###autoload
+(define-key isearch-mode-map "\M-sp" #'isearch-toggle-pinyin)
 
 (provide 'pinyin-search)
 
