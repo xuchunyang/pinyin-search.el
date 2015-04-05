@@ -19,7 +19,8 @@ and Emacs itself.
 
 ## Screenshot
 
-![Imgur](http://i.imgur.com/nYdtila.gif)
+* `isearch-forward-pinyin` ![Imgur](http://i.imgur.com/nYdtila.gif)
+* `helm-pinyin-search` ![Imgur](http://i.imgur.com/GN9H528.png)
 
 ## Installation
 
@@ -29,7 +30,8 @@ You can install `pinyin-search` from [MELPA](http://melpa.org/) with package.el.
 
 ## Usage
 
-    M-x pinyin-search RET
+- `isearch-forward-pinyin`
+- `helm-pinyin-search`
 
 ## Known Bugs and Limitations
 

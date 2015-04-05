@@ -39,6 +39,7 @@
 ;; - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
 
 ;;; Change Log:
+;; 1.1.0   - 2015/04/05 - Add Helm Integration
 ;; 1.0.1   - 2015/04/05 - Add two aliases (`pinyin-search' and `pinyin-search-backward')
 ;; 1.0.0   - 2015/03/18 - Simplify integration with `isearch'.
 ;; 0.0.1   - 2015/01/31 - Created File.
@@ -54,13 +55,11 @@
 
 (defcustom pinyin-search-message-prefix "[拼音] "
   "Prepended to the isearch prompt when Pinyin searching is activated."
-  :type 'string
-  :group 'pinyin-search)
+  :type 'string)
 
 (defcustom pinyin-search-keep-last-state nil
   "Non-nil means the last state will be used in any next isearch commands."
-  :type 'boolean
-  :group 'pinyin-search)
+  :type 'boolean)
 
 (defconst fbpd-char-table
   '("[阿啊呵腌嗄锕吖爱哀挨碍埃癌艾唉矮哎皑蔼隘暧霭捱嗳瑷嫒锿嗌砹安案按暗岸俺谙黯鞍氨庵桉鹌胺铵揞犴埯昂肮盎奥澳傲熬敖凹袄懊坳嗷拗鏖骜鳌翱岙廒遨獒聱媪螯鏊]"
@@ -182,6 +181,42 @@ Toggles the value of the variable `pinyin-search-activated'."
 
 ;;;###autoload
 (define-key isearch-mode-map "\M-sp" #'isearch-toggle-pinyin)
+
+
+;;; Helm Integration
+(when (require 'helm nil t)
+  (defclass helm-source-pinyin-search (helm-source-multi-occur)
+    ((pattern-transformer :initform 'pinyin-search--pinyin-to-regexp)))
+
+  (defvar pinyin-search--helm-source nil)
+  (defun pinyin-search--helm-init-source ()
+    (unless pinyin-search--helm-source
+      (setq pinyin-search--helm-source
+            (helm-make-source "pinyin-search" 'helm-source-pinyin-search)))))
+
+;;;###autoload
+(defun helm-pinyin-search ()
+  "Preconfigured helm for pinyin-search."
+  (interactive)
+  (if (featurep 'helm)
+      (progn
+        (pinyin-search--helm-init-source)
+        (let ((bufs (list (buffer-name (current-buffer)))))
+          (helm-attrset 'moccur-buffers bufs pinyin-search--helm-source)
+          (helm-set-local-variable 'helm-multi-occur-buffer-list bufs)
+          (helm-set-local-variable
+           'helm-multi-occur-buffer-tick
+           (cl-loop for b in bufs
+                    collect (buffer-chars-modified-tick (get-buffer b)))))
+        (helm :sources 'pinyin-search--helm-source
+              :buffer "*helm pinyin search*"
+              :history 'helm-grep-history
+              :preselect (and (memq 'pinyin-search--helm-source
+                                    helm-sources-using-default-as-input)
+                              (format "%s:%d:"
+                                      (buffer-name) (line-number-at-pos (point))))
+              :truncate-lines t))
+    (error "helm not found")))
 
 (provide 'pinyin-search)
 
