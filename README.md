@@ -30,7 +30,7 @@ You can install `pinyin-search` from [MELPA](http://melpa.org/) with package.el.
 
 ## Usage
 
-- `isearch-forward-pinyin`
+- `pinyin-search`
 - `helm-pinyin-search`
 
 ## Known Bugs and Limitations
