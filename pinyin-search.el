@@ -1,6 +1,6 @@
 ;;; pinyin-search.el --- Search Chinese by Pinyin
 
-;; Copyright © 2015 Chunyang Xu
+;; Copyright © 2015 Chunyang Xu <xuchunyang56@gmail.com>
 
 ;; Author: Chunyang Xu <xuchunyang56@gmail.com>
 ;; URL: https://github.com/xuchunyang/pinyin-search.el
@@ -8,10 +8,21 @@
 ;; Created: 30 Jan 2015
 ;; Keywords: Chinese, search
 
-;; This file is free software (GPLv3 License)
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;
+
 ;; Search Chinese by the first letter of Chinese pinyin.
 ;; 使用拼音首字母搜索中文。
 ;; e.g. use `zw` to search `中文` (*Z*hong *W*en).
@@ -26,6 +37,10 @@
 ;; Known Bugs and Limitations:
 ;; - [anzu.el](https://github.com/syohex/emacs-anzu) compatibility
 
+;;; Change Log:
+;; 1.0.0   - 2015/3/18 - Simplify integration with `isearch'.
+;; 0.0.1   - 2015/1/31 - Created File.
+
 ;;; Code:
 
 (defgroup pinyin-search nil
@@ -163,7 +178,7 @@ Toggles the value of the variable `pinyin-search-activated'."
 (provide 'pinyin-search)
 
 ;; Local Variables:
-;; coding: utf-8
+;; indent-tabs-mode: nil
 ;; End:
 
 ;;; pinyin-search.el ends here
