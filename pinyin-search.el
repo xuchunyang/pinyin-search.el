@@ -111,11 +111,7 @@ see URL `https://github.com/redguardtoo/find-by-pinyin-dired'.")
 
 (defun pinyin-search--pinyin-to-regexp (pinyin)
   "Convert the first letter of Chinese PINYIN to regexp."
-  (let ((regexp ""))
-    (mapc
-     (lambda (ch) (setq regexp (concat regexp (nth (- ch ?a) fbpd-char-table))))
-     pinyin)
-    regexp))
+  (mapconcat (lambda (char) (nth (- char ?a) fbpd-char-table)) pinyin ""))
 
 (defun pinyin-search-unload-function ()
   "Clean up when unload this package with `unload-feature'.
