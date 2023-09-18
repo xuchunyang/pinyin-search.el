@@ -96,11 +96,11 @@ pinyin-search modifies some default behaviors of isearch."
   "Wrap for Pinyin searching."
   (if pinyin-search-activated
       ;; Return the function to use for pinyin search
-      `(lambda (string bound noerror)
+      `(lambda (string &optional bound noerror count)
          (funcall (if ,isearch-forward
                       're-search-forward
                     're-search-backward)
-                  (pinyin-search--pinyin-to-regexp string) bound noerror))
+                  (pinyin-search--pinyin-to-regexp string) bound noerror count))
     ;; Return default function
     (isearch-search-fun-default)))
 
